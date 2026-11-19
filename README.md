@@ -58,6 +58,6 @@
 
 | 폴더 | 설명 |
 |---|---|
-| [📋 Planning](./planning/) | 프로젝트 기획 문서 |
-| [🤝 Meetings](./meetings/) | 팀 회의록 |
-| [💬 Mentoring](./mentoring/) | 멘토링 기록 |
+| [📋 Planning](./docs/planning/) | 프로젝트 기획 문서 |
+| [🤝 Meetings](./docs/meetings/) | 팀 회의록 |
+| [💬 Mentoring](./docs/mentoring/) | 멘토링 기록 |
