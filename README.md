@@ -58,6 +58,6 @@
 
 | 폴더 | 설명 |
 |---|---|
-| [📋 Planning](./planning/) | 프로젝트 개요, 요구사항 정의서, 와이어프레임, ERD, API 명세서 등 |
-| [🤝 Meetings](./meetings/) | 팀 회의 내용 및 주요 결정 사항 |
-| [💬 Mentoring](./mentoring/) | 멘토링 질문, 답변 및 피드백 정리 |
+| [📋 Planning](./planning/) | 프로젝트 기획 문서 |
+| [🤝 Meetings](./meetings/) | 팀 회의록 |
+| [💬 Mentoring](./mentoring/) | 멘토링 기록 |
