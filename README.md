@@ -53,3 +53,11 @@
 ## 📅 4. 프로젝트 개발 일정
 
 ![필케어 프로젝트 개발 일정](docs/images/일정표.png)
+
+## 📁 5. 바로가기 (Documentation)
+
+| 폴더 | 설명 |
+|---|---|
+| [📋 Planning](./planning/) | 프로젝트 개요, 요구사항 정의서, 와이어프레임, ERD, API 명세서 등 |
+| [🤝 Meetings](./meetings/) | 팀 회의 내용 및 주요 결정 사항 |
+| [💬 Mentoring](./mentoring/) | 멘토링 질문, 답변 및 피드백 정리 |
