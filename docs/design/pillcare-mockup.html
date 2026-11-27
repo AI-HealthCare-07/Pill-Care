@@ -1,0 +1,408 @@
+<title>필케어 모바일 목업</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: four phone artboards (홈 / 스캔 / 챗봇 / 약 상세) side by side on desktop, stacked on phones.
+   Palette: clinical teal for "on track", amber for "due soon", red only for warnings. Neutrals lean teal. */
+:root {
+  --bg: #EEF4F3;
+  --surface: #FFFFFF;
+  --surface-2: #F4F8F7;
+  --ink: #0E2A2B;
+  --ink-2: #4F6968;
+  --line: #DCE7E5;
+  --teal: #0B8A7E;
+  --teal-soft: #DDF1EE;
+  --teal-ink: #FFFFFF;
+  --amber: #E08A1E;
+  --amber-soft: #FDEBD0;
+  --red: #C93A3A;
+  --red-soft: #FADADA;
+  --shadow: 0 1px 2px rgba(14,42,43,.06), 0 12px 32px rgba(14,42,43,.08);
+  --font: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1717; --surface: #122322; --surface-2: #182C2B; --ink: #E6F2F0; --ink-2: #9DB6B3;
+    --line: #234140; --teal: #3CC2B3; --teal-soft: #14403C; --teal-ink: #062321;
+    --amber: #F0A64A; --amber-soft: #44301A; --red: #F07A7A; --red-soft: #4A2222;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.4);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1717; --surface: #122322; --surface-2: #182C2B; --ink: #E6F2F0; --ink-2: #9DB6B3;
+  --line: #234140; --teal: #3CC2B3; --teal-soft: #14403C; --teal-ink: #062321;
+  --amber: #F0A64A; --amber-soft: #44301A; --red: #F07A7A; --red-soft: #4A2222;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.4);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 48px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.intro { max-width: 1320px; margin: 0 auto 28px; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: end; justify-content: space-between; }
+.intro h1 { margin: 0; font-size: 1.75rem; font-weight: 800; letter-spacing: -.02em; text-wrap: balance; }
+.intro p { margin: 4px 0 0; color: var(--ink-2); max-width: 56ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; font-size: .8125rem; color: var(--ink-2); }
+.legend li { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 99px; }
+.legend i { width: 10px; height: 10px; border-radius: 50%; display: block; }
+
+.board { max-width: 1320px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 28px 24px; justify-items: center; }
+.board figure { margin: 0; width: 100%; max-width: 390px; min-width: 0; }
+.board figcaption { font-size: .8125rem; font-weight: 700; color: var(--ink-2); letter-spacing: .04em; margin: 0 4px 10px; }
+
+.screen { position: relative; height: 800px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 36px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+.status { display: flex; justify-content: space-between; padding: 14px 26px 6px; font-size: .8125rem; font-weight: 700; flex: none; }
+.scroll { flex: 1; overflow-y: auto; padding: 8px 20px 112px; display: flex; flex-direction: column; gap: 16px; scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
+
+.tabbar { position: absolute; inset: auto 0 0 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 8px 8px 22px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 52px; justify-content: center; border: 0; background: none; font-size: .75rem; font-weight: 500; color: var(--ink-2); border-radius: 12px; }
+.tab svg { width: 24px; height: 24px; }
+.tab[aria-current="page"] { color: var(--teal); font-weight: 700; }
+.tab.scan { color: var(--teal-ink); }
+.tab.scan span.fab { width: 52px; height: 52px; margin-top: -26px; border-radius: 50%; background: var(--teal); display: grid; place-items: center; box-shadow: 0 6px 16px rgba(11,138,126,.35); }
+.tab.scan span.lbl { color: var(--ink-2); }
+.tab.scan[aria-current="page"] span.lbl { color: var(--teal); font-weight: 700; }
+
+.hello { display: flex; justify-content: space-between; align-items: center; }
+.hello h2 { margin: 0; font-size: 1.375rem; font-weight: 800; letter-spacing: -.02em; }
+.hello small { display: block; color: var(--ink-2); font-size: .875rem; }
+.avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--teal-soft); color: var(--teal); display: grid; place-items: center; font-weight: 800; }
+
+.card { background: var(--surface); border-radius: 20px; padding: 18px; border: 1px solid var(--line); }
+.card h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 700; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* Next-dose hero: one number the user came for */
+.next { background: var(--teal); color: var(--teal-ink); border: 0; padding: 20px; }
+.next .eyebrow { font-size: .875rem; font-weight: 500; opacity: .9; }
+.next .big { font-size: 3rem; font-weight: 800; letter-spacing: -.04em; line-height: 1.1; margin: 4px 0 0; }
+.next .big small { font-size: 1.125rem; font-weight: 700; letter-spacing: 0; margin-left: 8px; opacity: .92; }
+.next .drug { margin: 14px 0 16px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.16); display: flex; gap: 12px; align-items: center; }
+.next .drug b { display: block; font-size: 1.0625rem; }
+.next .drug span { font-size: .875rem; opacity: .92; }
+.btn { min-height: 52px; width: 100%; border-radius: 14px; border: 0; font-weight: 800; font-size: 1.0625rem; }
+.btn.light { background: #fff; color: #0A6B62; }
+.btn.solid { background: var(--teal); color: var(--teal-ink); }
+.btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.pill-ic { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.2); display: grid; place-items: center; flex: none; }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.timeline li { display: grid; grid-template-columns: 56px 20px 1fr auto; gap: 8px; align-items: center; min-height: 60px; position: relative; }
+.timeline .t { font-weight: 700; font-size: .9375rem; }
+.timeline .dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--line); background: var(--surface); justify-self: center; z-index: 1; }
+.timeline li:not(:last-child)::after { content: ""; position: absolute; left: 73px; top: 38px; bottom: -22px; width: 2px; background: var(--line); }
+.timeline .done .dot { background: var(--teal); border-color: var(--teal); }
+.timeline .soon .dot { border-color: var(--amber); }
+.timeline .name { font-size: .9375rem; min-width: 0; }
+.timeline .name small { display: block; color: var(--ink-2); font-size: .8125rem; }
+
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; font-size: .8125rem; font-weight: 700; white-space: nowrap; }
+.chip.ok { background: var(--teal-soft); color: var(--teal); }
+.chip.warn { background: var(--amber-soft); color: var(--amber); }
+.chip.bad { background: var(--red-soft); color: var(--red); }
+.chip.mute { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; height: 96px; }
+.week div { display: flex; flex-direction: column; align-items: center; justify-content: end; gap: 6px; height: 100%; font-size: .8125rem; color: var(--ink-2); }
+.week .bar { width: 100%; max-width: 28px; border-radius: 8px 8px 4px 4px; background: var(--teal); }
+.week .bar.part { background: var(--amber); }
+.week .bar.today { background: repeating-linear-gradient(135deg, var(--teal-soft), var(--teal-soft) 4px, var(--surface) 4px, var(--surface) 8px); border: 1.5px dashed var(--teal); }
+.week b { color: var(--ink); }
+.stat { font-size: 2rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.stat small { font-size: .9375rem; font-weight: 500; color: var(--ink-2); letter-spacing: 0; margin-left: 4px; }
+
+.tip { display: flex; gap: 12px; align-items: flex-start; }
+.tip .ic { width: 40px; height: 40px; border-radius: 12px; background: var(--amber-soft); color: var(--amber); display: grid; place-items: center; flex: none; }
+.tip p { margin: 0; font-size: .9375rem; }
+.tip small { color: var(--ink-2); font-size: .8125rem; }
+
+/* Scan */
+.title { font-size: 1.375rem; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+.sub { margin: 2px 0 0; color: var(--ink-2); font-size: .9375rem; }
+.paper { background: #FBFBF7; color: #26302F; border-radius: 16px; padding: 16px; font-size: .8125rem; border: 1px solid var(--line); position: relative; display: grid; gap: 6px; box-shadow: var(--shadow); }
+.paper .ln { display: flex; justify-content: space-between; gap: 8px; padding: 3px 6px; border-radius: 6px; }
+.paper .hit { background: rgba(11,138,126,.16); outline: 1.5px solid #0B8A7E; }
+.paper .low { background: rgba(224,138,30,.2); outline: 1.5px dashed #E08A1E; }
+.paper .hd { font-weight: 800; border-bottom: 1px solid #D5DAD6; padding-bottom: 6px; display: flex; justify-content: space-between; }
+.found { display: flex; flex-direction: column; gap: 10px; }
+.item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; }
+.item b { font-size: 1rem; }
+.item small { color: var(--ink-2); font-size: .8125rem; }
+.item + .item { padding-top: 10px; border-top: 1px solid var(--line); }
+.note { display: flex; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--amber-soft); font-size: .875rem; }
+
+/* Chat */
+.chat { display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 88%; padding: 12px 14px; border-radius: 18px; font-size: .9375rem; }
+.msg.me { align-self: flex-end; background: var(--teal); color: var(--teal-ink); border-bottom-right-radius: 6px; }
+.msg.ai { align-self: flex-start; background: var(--surface); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.msg.ai .by { display: flex; align-items: center; gap: 6px; font-size: .75rem; font-weight: 700; color: var(--teal); margin-bottom: 6px; }
+.msg ul { margin: 8px 0 0; padding-left: 18px; }
+.src { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: .75rem; color: var(--ink-2); }
+.quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.quick button { min-height: 44px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); font-size: .875rem; font-weight: 500; }
+.disclaimer { font-size: .75rem; color: var(--ink-2); text-align: center; margin: 0; }
+.composer { position: absolute; inset: auto 0 84px 0; padding: 10px 16px; background: var(--surface-2); display: flex; gap: 8px; }
+.composer input { flex: 1; min-width: 0; min-height: 48px; border-radius: 24px; border: 1px solid var(--line); background: var(--surface); padding: 0 18px; font: inherit; color: var(--ink); }
+.composer button { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--teal); color: var(--teal-ink); display: grid; place-items: center; }
+
+/* Drug detail */
+.back { display: flex; align-items: center; gap: 4px; color: var(--ink-2); font-weight: 500; min-height: 44px; background: none; border: 0; padding: 0; }
+.dose { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.dose div { background: var(--surface-2); border-radius: 14px; padding: 12px 4px; }
+.dose b { display: block; font-size: 1.25rem; font-weight: 800; }
+.dose span { font-size: .8125rem; color: var(--ink-2); }
+.kv { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+.kv dt { font-size: .8125rem; font-weight: 700; color: var(--ink-2); margin-bottom: 2px; }
+.kv dd { margin: 0; font-size: .9375rem; }
+.warnbox { border-radius: 14px; background: var(--red-soft); padding: 14px; font-size: .9375rem; display: flex; gap: 10px; }
+.warnbox svg { flex: none; color: var(--red); }
+.foot { font-size: .75rem; color: var(--ink-2); margin: 0; }
+
+@media (max-width: 440px) { body { padding-block: 20px 32px; } .screen { height: 760px; border-radius: 28px; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pill" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2.5" y="8.5" width="19" height="7" rx="3.5" transform="rotate(-40 12 12)"/><path d="M9 8.5l6.5 6.5" transform="rotate(0 12 12)"/></g></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></g></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-5 4v-4H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/></g></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.01"/></g></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-water" viewBox="0 0 24 24"><path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<header class="intro">
+  <div>
+    <h1>필케어 모바일 화면 목업</h1>
+    <p>복약 시간을 한눈에 확인하고, 처방전을 찍어 등록하고, AI에게 물어보는 흐름입니다. 모든 데이터는 예시입니다.</p>
+  </div>
+  <ul class="legend" aria-label="색상 의미">
+    <li><i style="background:var(--teal)"></i>복용 완료·정상</li>
+    <li><i style="background:var(--amber)"></i>임박·확인 필요</li>
+    <li><i style="background:var(--red)"></i>주의·금기</li>
+  </ul>
+</header>
+
+<main class="board">
+
+  <!-- 1. 홈 -->
+  <figure>
+    <figcaption>1 · 홈</figcaption>
+    <div class="screen">
+      <div class="status num"><span>12:48</span><span>5G ▮▮▮</span></div>
+      <div class="scroll">
+        <div class="hello">
+          <div><small>11월 27일 금요일</small><h2>지민님, 안녕하세요</h2></div>
+          <div class="avatar" aria-hidden="true">지</div>
+        </div>
+
+        <section class="card next" aria-label="다음 복약">
+          <div class="eyebrow">다음 복약</div>
+          <div class="big num">오후 1:00<small>12분 후</small></div>
+          <div class="drug">
+            <div class="pill-ic"><svg width="22" height="22"><use href="#i-pill"/></svg></div>
+            <div><b>아모디핀정 5mg</b><span>1정 · 식후 30분 · 혈압</span></div>
+          </div>
+          <button class="btn light" type="button">복용했어요</button>
+        </section>
+
+        <section class="card" aria-label="오늘 일정">
+          <h3>오늘 복약 일정</h3>
+          <ol class="timeline">
+            <li class="done"><span class="t num">08:00</span><span class="dot"></span><span class="name">아모디핀정 5mg<small>아침 식후</small></span><span class="chip ok">완료</span></li>
+            <li class="soon"><span class="t num">13:00</span><span class="dot"></span><span class="name">아모디핀정 5mg<small>점심 식후</small></span><span class="chip warn">12분 후</span></li>
+            <li><span class="t num">19:30</span><span class="dot"></span><span class="name">메트포르민정 500mg<small>저녁 식사 직후</small></span><span class="chip mute">예정</span></li>
+          </ol>
+        </section>
+
+        <section class="card" aria-label="이번 주 복약률">
+          <div class="row" style="margin-bottom:14px">
+            <h3 style="margin:0">이번 주 복약률</h3>
+            <div class="stat num">92<small>%</small></div>
+          </div>
+          <div class="week" role="img" aria-label="월 100, 화 100, 수 67, 목 100, 금 진행 중">
+            <div><span class="bar" style="height:100%"></span>월</div>
+            <div><span class="bar" style="height:100%"></span>화</div>
+            <div><span class="bar part" style="height:67%"></span>수</div>
+            <div><span class="bar" style="height:100%"></span>목</div>
+            <div><span class="bar today" style="height:50%"></span><b>금</b></div>
+            <div><span style="height:0"></span>토</div>
+            <div><span style="height:0"></span>일</div>
+          </div>
+        </section>
+
+        <section class="card tip" aria-label="오늘의 생활 가이드">
+          <div class="ic"><svg width="22" height="22"><use href="#i-water"/></svg></div>
+          <div>
+            <p><b>오늘의 생활 가이드</b></p>
+            <p>혈압약을 드시는 동안은 국물 요리의 나트륨을 줄이고, 자몽 주스는 피하세요.</p>
+            <small>처방 기록 기반 · AI가 정리한 안내</small>
+          </div>
+        </section>
+      </div>
+      <nav class="tabbar" aria-label="하단 메뉴">
+        <button class="tab" type="button" aria-current="page"><svg><use href="#i-home"/></svg>홈</button>
+        <button class="tab" type="button"><svg><use href="#i-pill"/></svg>내 약</button>
+        <button class="tab scan" type="button"><span class="fab"><svg width="26" height="26"><use href="#i-scan"/></svg></span><span class="lbl">스캔</span></button>
+        <button class="tab" type="button"><svg><use href="#i-chat"/></svg>상담</button>
+        <button class="tab" type="button"><svg><use href="#i-user"/></svg>내 정보</button>
+      </nav>
+    </div>
+  </figure>
+
+  <!-- 2. 처방전 스캔 -->
+  <figure>
+    <figcaption>2 · 처방전 스캔 결과</figcaption>
+    <div class="screen">
+      <div class="status num"><span>12:51</span><span>5G ▮▮▮</span></div>
+      <div class="scroll">
+        <div>
+          <h2 class="title">처방전을 읽었어요</h2>
+          <p class="sub">약 2개를 찾았어요. 확인 후 저장하세요.</p>
+        </div>
+
+        <div class="paper" aria-label="인식한 처방전 미리보기">
+          <div class="hd"><span>처 방 전</span><span class="num">2026.11.24</span></div>
+          <div class="ln"><span>환자명 김지민</span><span>○○내과의원</span></div>
+          <div class="ln hit"><span>아모디핀정 5mg</span><span class="num">1일 2회 · 30일</span></div>
+          <div class="ln low"><span>메트포르민정 5OOmg</span><span class="num">1일 1회 · 30일</span></div>
+          <div class="ln"><span>조제 시 참고사항 없음</span><span></span></div>
+        </div>
+
+        <section class="card found" aria-label="인식된 약">
+          <div class="item">
+            <b>아모디핀정 5mg</b><span class="chip ok">정확도 98%</span>
+            <small>하루 2번 · 식후 30분 · 30일분</small><span></span>
+          </div>
+          <div class="item">
+            <b>메트포르민정 500mg</b><span class="chip warn">확인 필요</span>
+            <small>하루 1번 · 저녁 식사 직후 · 30일분</small><span></span>
+          </div>
+        </section>
+
+        <div class="note">
+          <svg width="22" height="22" style="flex:none;color:var(--amber)"><use href="#i-warn"/></svg>
+          <span><b>용량을 다시 확인해 주세요.</b> "500mg"을 "5OOmg"로 읽었을 수 있어요. 처방전과 비교해 맞으면 저장하세요.</span>
+        </div>
+
+        <button class="btn solid" type="button">복약 일정에 저장</button>
+        <button class="btn ghost" type="button">다시 촬영하기</button>
+      </div>
+      <nav class="tabbar" aria-label="하단 메뉴">
+        <button class="tab" type="button"><svg><use href="#i-home"/></svg>홈</button>
+        <button class="tab" type="button"><svg><use href="#i-pill"/></svg>내 약</button>
+        <button class="tab scan" type="button" aria-current="page"><span class="fab"><svg width="26" height="26"><use href="#i-scan"/></svg></span><span class="lbl">스캔</span></button>
+        <button class="tab" type="button"><svg><use href="#i-chat"/></svg>상담</button>
+        <button class="tab" type="button"><svg><use href="#i-user"/></svg>내 정보</button>
+      </nav>
+    </div>
+  </figure>
+
+  <!-- 3. AI 상담 -->
+  <figure>
+    <figcaption>3 · AI 복약 상담</figcaption>
+    <div class="screen">
+      <div class="status num"><span>12:55</span><span>5G ▮▮▮</span></div>
+      <div class="scroll" style="padding-bottom:190px">
+        <div>
+          <h2 class="title">복약 상담</h2>
+          <p class="sub">내 처방 기록을 참고해 답해요.</p>
+        </div>
+        <div class="chat">
+          <div class="msg me">아모디핀 먹는 중인데 자몽 주스 마셔도 돼요?</div>
+          <div class="msg ai">
+            <div class="by"><svg width="14" height="14"><use href="#i-spark"/></svg>AI 안내</div>
+            자몽 주스는 피하는 편이 좋아요. 아모디핀의 혈중 농도를 높여 어지럼증이나 저혈압이 생길 수 있어요.
+            <ul>
+              <li>복용 중에는 자몽과 자몽 주스를 피하세요.</li>
+              <li>이미 마셨다면 어지러운지 살펴보세요.</li>
+            </ul>
+            <div class="src">출처 · 의약품안전나라 e약은요 · 아모디핀정 5mg</div>
+          </div>
+          <div class="msg me">어지러우면 어떻게 해요?</div>
+          <div class="msg ai">
+            <div class="by"><svg width="14" height="14"><use href="#i-spark"/></svg>AI 안내</div>
+            우선 앉거나 누워서 쉬세요. 증상이 계속되면 처방받은 병원이나 약국에 문의하세요.
+            <div class="src">출처 · 의약품안전나라 e약은요</div>
+          </div>
+        </div>
+        <div class="quick" aria-label="추천 질문">
+          <button type="button">같이 먹으면 안 되는 약</button>
+          <button type="button">복용 시간을 놓쳤어요</button>
+        </div>
+        <p class="disclaimer">AI 안내는 참고용이에요. 정확한 판단은 의사·약사와 상담하세요.</p>
+      </div>
+      <form class="composer" onsubmit="return false">
+        <input id="chat-input" type="text" placeholder="궁금한 점을 물어보세요" aria-label="질문 입력">
+        <button type="submit" aria-label="보내기"><svg width="22" height="22"><use href="#i-send"/></svg></button>
+      </form>
+      <nav class="tabbar" aria-label="하단 메뉴">
+        <button class="tab" type="button"><svg><use href="#i-home"/></svg>홈</button>
+        <button class="tab" type="button"><svg><use href="#i-pill"/></svg>내 약</button>
+        <button class="tab scan" type="button"><span class="fab"><svg width="26" height="26"><use href="#i-scan"/></svg></span><span class="lbl">스캔</span></button>
+        <button class="tab" type="button" aria-current="page"><svg><use href="#i-chat"/></svg>상담</button>
+        <button class="tab" type="button"><svg><use href="#i-user"/></svg>내 정보</button>
+      </nav>
+    </div>
+  </figure>
+
+  <!-- 4. 약 상세 -->
+  <figure>
+    <figcaption>4 · 약 상세</figcaption>
+    <div class="screen">
+      <div class="status num"><span>12:57</span><span>5G ▮▮▮</span></div>
+      <div class="scroll">
+        <button class="back" type="button"><svg width="22" height="22"><use href="#i-back"/></svg>내 약</button>
+        <div>
+          <span class="chip ok">복용 중 · 24일 남음</span>
+          <h2 class="title" style="margin-top:8px">아모디핀정 5mg</h2>
+          <p class="sub">고혈압 · ○○내과의원 처방</p>
+        </div>
+
+        <div class="dose" aria-label="복용량">
+          <div><b class="num">1정</b><span>1회</span></div>
+          <div><b class="num">2회</b><span>하루</span></div>
+          <div><b>식후</b><span>30분</span></div>
+        </div>
+
+        <section class="card">
+          <dl class="kv">
+            <div><dt>이 약은 어디에 쓰나요</dt><dd>혈압을 낮추고 협심증 증상을 완화해요.</dd></div>
+            <div><dt>이렇게 드세요</dt><dd>매일 같은 시간에 물과 함께 삼키세요. 증상이 좋아져도 임의로 끊지 마세요.</dd></div>
+            <div><dt>잊었다면</dt><dd>생각난 즉시 드세요. 다음 복용 시간이 가까우면 건너뛰고, 두 배로 먹지 마세요.</dd></div>
+          </dl>
+        </section>
+
+        <div class="warnbox">
+          <svg width="22" height="22"><use href="#i-warn"/></svg>
+          <span><b>자몽 주스는 피하세요.</b> 약 효과가 지나치게 커질 수 있어요.</span>
+        </div>
+
+        <p class="foot">출처 · 의약품안전나라 e약은요 · 이 정보는 참고용이며 의사·약사의 안내를 대신하지 않아요.</p>
+      </div>
+      <nav class="tabbar" aria-label="하단 메뉴">
+        <button class="tab" type="button"><svg><use href="#i-home"/></svg>홈</button>
+        <button class="tab" type="button" aria-current="page"><svg><use href="#i-pill"/></svg>내 약</button>
+        <button class="tab scan" type="button"><span class="fab"><svg width="26" height="26"><use href="#i-scan"/></svg></span><span class="lbl">스캔</span></button>
+        <button class="tab" type="button"><svg><use href="#i-chat"/></svg>상담</button>
+        <button class="tab" type="button"><svg><use href="#i-user"/></svg>내 정보</button>
+      </nav>
+    </div>
+  </figure>
+
+</main>

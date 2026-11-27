@@ -61,3 +61,5 @@
 | [📋 Planning](./docs/planning/) | 프로젝트 기획 문서 |
 | [🤝 Meetings](./docs/meetings/) | 팀 회의록 |
 | [💬 Mentoring](./docs/mentoring/) | 멘토링 기록 |
+
+🎨 **[모바일 디자인 목업 바로 보기](https://claude.ai/artifact/Qa96nqjK7uxuoVuHoDfS68)**
